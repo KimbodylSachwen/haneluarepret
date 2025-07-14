@@ -1,401 +1,100 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VocabTest - 测试你的词汇量</title>
+    <title>Mahons aluarepret | Mahons dictionary,translations</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    
-    <!-- Tailwind 配置 -->
     <script>
         tailwind.config = {
-            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
-                        primary: '#165DFF',
-                        secondary: '#FF7D00',
-                        success: '#00B42A',
-                        danger: '#F53F3F',
-                        dark: {
-                            bg: '#121212',
-                            card: '#1E1E1E',
-                            text: '#E0E0E0'
-                        }
+                        primary: '#1a365d',
+                        secondary: '#4a5568',
+                        accent: '#718096',
+                        light: '#e2e8f0',
+                        dark: '#2d3748'
                     },
                     fontFamily: {
-                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                        serif: ['Cambria', 'Georgia', 'serif'],
                     },
                 }
             }
         }
     </script>
-    
-    <!-- 自定义工具类 -->
     <style type="text/tailwindcss">
         @layer utilities {
             .content-auto {
                 content-visibility: auto;
             }
-            .card-shadow {
-                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+            .dictionary-shadow {
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
             }
-            .card-hover {
+            .entry-card {
                 transition: transform 0.3s ease, box-shadow 0.3s ease;
             }
-            .card-hover:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            }
-            .btn-effect {
-                transition: all 0.2s ease;
-            }
-            .btn-effect:hover {
+            .entry-card:hover {
                 transform: translateY(-2px);
-            }
-            .btn-effect:active {
-                transform: translateY(0);
-            }
-            .progress-animation {
-                transition: width 0.5s ease-in-out;
-            }
-            .fade-in {
-                animation: fadeIn 0.5s ease-in-out;
-            }
-            @keyframes fadeIn {
-                from { opacity: 0; transform: translateY(10px); }
-                to { opacity: 1; transform: translateY(0); }
+                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
             }
         }
     </style>
-    
-    <!-- 引入字体 -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
-
-<body class="font-inter bg-gray-50 text-gray-800 dark:bg-dark-bg dark:text-dark-text min-h-screen flex flex-col transition-colors duration-300">
-    <!-- 导航栏 -->
-    <header class="sticky top-0 z-50 bg-white/80 dark:bg-dark-card/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800">
-        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
-            <div class="flex items-center space-x-2">
-                <i class="fa fa-book text-primary text-2xl"></i>
-                <h1 class="text-xl font-bold text-primary">VocabTest</h1>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    <!-- 顶部导航 -->
+    <header class="bg-primary text-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center">
+            <div class="flex items-center mb-4 md:mb-0">
+                <i class="fa fa-book text-3xl mr-3"></i>
+                <h1 class="text-2xl font-bold tracking-wide">HANE | 在线词典</h1>
             </div>
-            
-            <nav class="hidden md:flex items-center space-x-6">
-                <a href="#" id="home-link" class="font-medium hover:text-primary transition-colors">首页</a>
-                <a href="#" id="test-link" class="font-medium hover:text-primary transition-colors">开始测试</a>
-                <a href="#" id="learn-link" class="font-medium hover:text-primary transition-colors">学习模式</a>
-                <a href="#" id="about-link" class="font-medium hover:text-primary transition-colors">关于</a>
-            </nav>
-            
-            <div class="flex items-center space-x-4">
-                <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                    <i class="fa fa-moon-o dark:hidden text-gray-600"></i>
-                    <i class="fa fa-sun-o hidden dark:block text-yellow-400"></i>
-                </button>
-                
-                <button id="mobile-menu-btn" class="md:hidden p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                    <i class="fa fa-bars text-gray-600 dark:text-gray-300"></i>
-                </button>
-            </div>
-        </div>
-        
-        <!-- 移动端菜单 -->
-        <div id="mobile-menu" class="hidden md:hidden bg-white dark:bg-dark-card border-b border-gray-200 dark:border-gray-800">
-            <div class="container mx-auto px-4 py-2 space-y-3">
-                <a href="#" id="mobile-home-link" class="block py-2 font-medium hover:text-primary transition-colors">首页</a>
-                <a href="#" id="mobile-test-link" class="block py-2 font-medium hover:text-primary transition-colors">开始测试</a>
-                <a href="#" id="mobile-learn-link" class="block py-2 font-medium hover:text-primary transition-colors">学习模式</a>
-                <a href="#" id="mobile-about-link" class="block py-2 font-medium hover:text-primary transition-colors">关于</a>
+            <div class="w-full md:w-auto">
+                <div class="relative">
+                    <input type="text" id="search-input" placeholder="搜索单词..." 
+                        class="w-full md:w-80 pl-10 pr-4 py-2 rounded-lg text-dark focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all">
+                    <i class="fa fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                </div>
             </div>
         </div>
     </header>
 
-    <!-- 主要内容区域 -->
+    <!-- 主内容区 -->
     <main class="flex-grow container mx-auto px-4 py-8">
-        <!-- 首页 -->
-        <section id="home" class="fade-in">
-            <div class="max-w-3xl mx-auto text-center">
-                <div class="relative inline-block mb-8">
-                    <i class="fa fa-book text-primary/20 text-[120px] absolute -z-10 left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2"></i>
-                    <h2 class="text-[clamp(2rem,5vw,3.5rem)] font-bold mb-4">测试你的词汇量</h2>
-                    <p class="text-lg text-gray-600 dark:text-gray-400 mb-8">通过我们的交互式词汇测试，发现你的马洪语词汇量水平并提高你的语言能力</p>
-                </div>
-                
-                <div class="bg-white dark:bg-dark-card rounded-2xl p-8 shadow-lg card-shadow card-hover mb-12">
-                    <div class="flex flex-col md:flex-row gap-6 items-center">
-                        <div class="w-full md:w-1/2">
-                            <h3 class="text-xl font-semibold mb-4">如何使用</h3>
-                            <ul class="space-y-3 text-left">
-                                <li class="flex items-start">
-                                    <span class="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center mr-3 mt-0.5">1</span>
-                                    <span>点击"开始测试"按钮开始词汇测试</span>
-                                </li>
-                                <li class="flex items-start">
-                                    <span class="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center mr-3 mt-0.5">2</span>
-                                    <span>从选项中选择单词的正确释义</span>
-                                </li>
-                                <li class="flex items-start">
-                                    <span class="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center mr-3 mt-0.5">3</span>
-                                    <span>完成测试后查看你的成绩和词汇量评估</span>
-                                </li>
-                                <li class="flex items-start">
-                                    <span class="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center mr-3 mt-0.5">4</span>
-                                    <span>使用学习模式巩固你不熟悉的单词</span>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="w-full md:w-1/2">
-                            <img src="https://picsum.photos/seed/vocab/600/400" alt="词汇学习图片" class="rounded-xl w-full h-auto object-cover shadow-md">
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="flex flex-col sm:flex-row justify-center gap-4">
-                    <button id="start-test-btn" class="btn-effect bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-xl font-medium flex items-center justify-center">
-                        <i class="fa fa-play-circle mr-2"></i> 开始测试
-                    </button>
-                    <button id="learn-mode-btn" class="btn-effect bg-white dark:bg-dark-card hover:bg-gray-50 dark:hover:bg-gray-800 text-primary border border-primary/30 px-8 py-3 rounded-xl font-medium flex items-center justify-center">
-                        <i class="fa fa-graduation-cap mr-2"></i> 学习模式
-                    </button>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- 左侧单词列表 -->
+            <div class="md:col-span-1 bg-white rounded-xl p-4 dictionary-shadow">
+                <h2 class="text-xl font-bold text-primary mb-4 pb-2 border-b border-gray-200">单词列表</h2>
+                <div id="word-list" class="space-y-1 max-h-[70vh] overflow-y-auto pr-2">
+                    <!-- 单词列表将通过JavaScript动态生成 -->
                 </div>
             </div>
-        </section>
-        
-        <!-- 测试页面 -->
-        <section id="test" class="hidden fade-in">
-            <div class="max-w-3xl mx-auto">
-                <div class="flex justify-between items-center mb-6">
-                    <button id="back-to-home" class="btn-effect text-gray-500 hover:text-primary transition-colors">
-                        <i class="fa fa-arrow-left mr-1"></i> 返回
-                    </button>
-                    <div class="flex items-center">
-                        <span id="current-question" class="font-medium mr-2">1</span>
-                        <span class="text-gray-500">/</span>
-                        <span id="total-questions" class="font-medium ml-2">20</span>
+
+            <!-- 右侧单词详情 -->
+            <div class="md:col-span-2 bg-white rounded-xl p-6 dictionary-shadow">
+                <div id="word-detail" class="min-h-[60vh]">
+                    <div class="text-center py-12 text-gray-500">
+                        <i class="fa fa-search text-5xl mb-4"></i>
+                        <p class="text-lg">请从左侧选择一个单词或使用搜索功能</p>
                     </div>
-                </div>
-                
-                <div class="bg-white dark:bg-dark-card rounded-2xl p-8 shadow-lg card-shadow mb-8">
-                    <div class="mb-8">
-                        <div class="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden mb-2">
-                            <div id="progress-bar" class="h-full bg-primary rounded-full progress-animation" style="width: 5%"></div>
-                        </div>
-                        <p id="progress-text" class="text-sm text-gray-500 dark:text-gray-400">进度: 5%</p>
-                    </div>
-                    
-                    <div class="mb-8">
-                        <h3 id="question-word" class="text-2xl font-bold text-center mb-6">Helix</h3>
-                        <p id="question-instruction" class="text-center text-gray-600 dark:text-gray-400">选择单词的正确释义:</p>
-                    </div>
-                    
-                    <div id="options-container" class="space-y-3">
-                        <!-- 选项将通过JavaScript动态生成 -->
-                    </div>
-                </div>
-                
-                <div class="flex justify-between">
-                    <button id="prev-btn" class="btn-effect bg-white dark:bg-dark-card hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 px-6 py-3 rounded-xl font-medium flex items-center" disabled>
-                        <i class="fa fa-arrow-left mr-2"></i> 上一题
-                    </button>
-                    <button id="next-btn" class="btn-effect bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-xl font-medium flex items-center" disabled>
-                        下一题 <i class="fa fa-arrow-right ml-2"></i>
-                    </button>
+                    <!-- 单词详情将通过JavaScript动态生成 -->
                 </div>
             </div>
-        </section>
-        
-        <!-- 学习模式 -->
-        <section id="learn" class="hidden fade-in">
-            <div class="max-w-4xl mx-auto">
-                <div class="flex justify-between items-center mb-6">
-                    <button id="back-to-home-learn" class="btn-effect text-gray-500 hover:text-primary transition-colors">
-                        <i class="fa fa-arrow-left mr-1"></i> 返回
-                    </button>
-                    <div class="relative">
-                        <input type="text" id="search-input" placeholder="搜索单词..." class="pl-9 pr-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-card focus:outline-none focus:ring-2 focus:ring-primary/50 w-64">
-                        <i class="fa fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                    </div>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- 单词卡片将通过JavaScript动态生成 -->
-                </div>
-            </div>
-        </section>
-        
-        <!-- 结果页面 -->
-        <section id="results" class="hidden fade-in">
-            <div class="max-w-2xl mx-auto text-center">
-                <div class="bg-white dark:bg-dark-card rounded-2xl p-8 shadow-lg card-shadow mb-8">
-                    <div class="w-32 h-32 mx-auto mb-6 relative">
-                        <div class="absolute inset-0 flex items-center justify-center">
-                            <span id="score-percentage" class="text-4xl font-bold text-primary">80%</span>
-                        </div>
-                        <svg class="w-full h-full" viewBox="0 0 100 100">
-                            <circle cx="50" cy="50" r="45" fill="none" stroke="#e2e8f0" stroke-width="10" />
-                            <circle id="score-circle" cx="50" cy="50" r="45" fill="none" stroke="#165DFF" stroke-width="10" stroke-dasharray="283" stroke-dashoffset="57" transform="rotate(-90 50 50)" stroke-linecap="round" />
-                        </svg>
-                    </div>
-                    
-                    <h3 class="text-2xl font-bold mb-2">测试完成!</h3>
-                    <p class="text-gray-600 dark:text-gray-400 mb-6">你答对了 <span id="correct-answers" class="font-medium">16</span> 题，共 <span id="total-questions-result" class="font-medium">20</span> 题</p>
-                    
-                    <div class="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 mb-6">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-gray-600 dark:text-gray-400">估计词汇量:</span>
-                            <span id="estimated-vocab" class="font-medium">4,500+</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-600 dark:text-gray-400">词汇水平:</span>
-                            <span id="vocab-level" class="font-medium text-secondary">中级</span>
-                        </div>
-                    </div>
-                    
-                    <div class="text-left">
-                        <h4 class="font-medium mb-3">错题回顾:</h4>
-                        <div id="incorrect-questions" class="space-y-3">
-                            <!-- 错题将通过JavaScript动态生成 -->
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="flex flex-col sm:flex-row justify-center gap-4">
-                    <button id="restart-test-btn" class="btn-effect bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-xl font-medium flex items-center justify-center">
-                        <i class="fa fa-refresh mr-2"></i> 重新测试
-                    </button>
-                    <button id="view-learn-mode-btn" class="btn-effect bg-white dark:bg-dark-card hover:bg-gray-50 dark:hover:bg-gray-800 text-primary border border-primary/30 px-8 py-3 rounded-xl font-medium flex items-center justify-center">
-                        <i class="fa fa-graduation-cap mr-2"></i> 学习模式
-                    </button>
-                </div>
-            </div>
-        </section>
-        
-        <!-- 关于页面 -->
-        <section id="about" class="hidden fade-in">
-            <div class="max-w-3xl mx-auto">
-                <h2 class="text-2xl font-bold mb-6 text-center">关于 VocabTest</h2>
-                
-                <div class="bg-white dark:bg-dark-card rounded-2xl p-8 shadow-lg card-shadow mb-8">
-                    <h3 class="text-xl font-semibold mb-4">为什么要测试你的词汇量？</h3>
-                    <p class="text-gray-600 dark:text-gray-400 mb-6">
-                        词汇量是语言能力的重要指标。研究表明，词汇量与阅读理解、写作能力和整体语言水平密切相关。通过定期测试你的词汇量，你可以：
-                    </p>
-                    <ul class="space-y-3 text-gray-600 dark:text-gray-400 mb-8">
-                        <li class="flex items-start">
-                            <i class="fa fa-check-circle text-success mt-1 mr-2"></i>
-                            <span>了解你的语言能力水平</span>
-                        </li>
-                        <li class="flex items-start">
-                            <i class="fa fa-check-circle text-success mt-1 mr-2"></i>
-                            <span>识别需要改进的领域</span>
-                        </li>
-                        <li class="flex items-start">
-                            <i class="fa fa-check-circle text-success mt-1 mr-2"></i>
-                            <span>跟踪你的学习进度</span>
-                        </li>
-                        <li class="flex items-start">
-                            <i class="fa fa-check-circle text-success mt-1 mr-2"></i>
-                            <span>为标准化考试（如AMST、MMT）做准备</span>
-                        </li>
-                    </ul>
-                    
-                    <h3 class="text-xl font-semibold mb-4">我们的单词库</h3>
-                    <p class="text-gray-600 dark:text-gray-400 mb-6">
-                        VocabTest使用精心挑选的单词库，涵盖了从基础到高级的词汇。我们的单词库包括：
-                    </p>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                        <div class="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg">
-                            <h4 class="font-medium mb-2">学术词汇</h4>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">适合学生和专业人士的学术和专业词汇</p>
-                        </div>
-                        <div class="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg">
-                            <h4 class="font-medium mb-2">日常用语</h4>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">日常生活中常用的实用词汇</p>
-                        </div>
-                        <div class="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg">
-                            <h4 class="font-medium mb-2">商务词汇</h4>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">职场和商务环境中使用的专业术语</p>
-                        </div>
-                        <div class="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg">
-                            <h4 class="font-medium mb-2">文学词汇</h4>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">文学作品中常见的丰富表达</p>
-                        </div>
-                    </div>
-                    
-                    <h3 class="text-xl font-semibold mb-4">如何使用 VocabTest</h3>
-                    <p class="text-gray-600 dark:text-gray-400">
-                        VocabTest设计简单易用，即使是初次使用的用户也能快速上手。我们提供两种主要模式：
-                    </p>
-                </div>
-                
-                <div class="flex flex-col md:flex-row gap-6">
-                    <div class="bg-white dark:bg-dark-card rounded-2xl p-6 shadow-lg card-shadow flex-grow">
-                        <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-                            <i class="fa fa-question-circle text-primary text-xl"></i>
-                        </div>
-                        <h3 class="text-lg font-semibold mb-2">测试模式</h3>
-                        <p class="text-gray-600 dark:text-gray-400">
-                            在测试模式中，你将看到一系列单词，并需要从选项中选择正确的释义。完成后，你将获得详细的结果分析。
-                        </p>
-                    </div>
-                    
-                    <div class="bg-white dark:bg-dark-card rounded-2xl p-6 shadow-lg card-shadow flex-grow">
-                        <div class="w-12 h-12 bg-secondary/10 rounded-full flex items-center justify-center mb-4">
-                            <i class="fa fa-book text-secondary text-xl"></i>
-                        </div>
-                        <h3 class="text-lg font-semibold mb-2">学习模式</h3>
-                        <p class="text-gray-600 dark:text-gray-400">
-                            在学习模式中，你可以浏览所有单词及其释义，帮助你系统地学习和复习词汇。
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </section>
+        </div>
     </main>
 
     <!-- 页脚 -->
-    <footer class="bg-white dark:bg-dark-card border-t border-gray-200 dark:border-gray-800 py-6">
-        <div class="container mx-auto px-4">
-            <div class="flex flex-col md:flex-row justify-between items-center">
-                <div class="mb-4 md:mb-0">
-                    <div class="flex items-center space-x-2">
-                        <i class="fa fa-book text-primary text-xl"></i>
-                        <span class="font-bold text-primary">VocabTest</span>
-                    </div>
-                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">测试并提高你的英语词汇量</p>
-                </div>
-                
-                <div class="flex space-x-6 mb-4 md:mb-0">
-                    <a href="#" class="text-gray-500 hover:text-primary transition-colors">
-                        <i class="fa fa-facebook"></i>
-                    </a>
-                    <a href="#" class="text-gray-500 hover:text-primary transition-colors">
-                        <i class="fa fa-twitter"></i>
-                    </a>
-                    <a href="#" class="text-gray-500 hover:text-primary transition-colors">
-                        <i class="fa fa-instagram"></i>
-                    </a>
-                    <a href="#" class="text-gray-500 hover:text-primary transition-colors">
-                        <i class="fa fa-linkedin"></i>
-                    </a>
-                </div>
-                
-                <p class="text-sm text-gray-500 dark:text-gray-400">
-                    &copy; 2023 VocabTest. 保留所有权利.
-                </p>
-            </div>
+    <footer class="bg-primary text-white py-6 mt-8">
+        <div class="container mx-auto px-4 text-center">
+            <p class="mb-2">哈恩大学（中国） &copy; 2025</p>
+            <p class="text-sm text-gray-300">https://hane.aceptaul.org</p>
         </div>
     </footer>
 
-    <!-- JavaScript -->
     <script>
-        // 单词库
-        const wordList = {
+        // 词典数据 - 保持原始格式
+        const dictionaryData = `
 "1.	A": "(sp.) 它; 他; （某个）事物; 东西; (s.)（前缀）加强的; 更高一层的",
 "2.	Aalpino": "(c.) 圆桌",
 "3.	Aauz": "(c.) 惨叫; 大叫",
@@ -6298,448 +5997,91 @@
 "5900.	Zylps": "(c.) （专业）矿",
 "5901.	Zylpsaft": "(c.) 采矿; 采矿行业",
 "5902.	Zylpslean": "(c.) 石绿色 (s.) 石绿色的"
-        };
+`;
 
-        // DOM元素
-        const sections = {
-            home: document.getElementById('home'),
-            test: document.getElementById('test'),
-            learn: document.getElementById('learn'),
-            results: document.getElementById('results'),
-            about: document.getElementById('about')
-        };
-
-        const navLinks = {
-            home: document.getElementById('home-link'),
-            test: document.getElementById('test-link'),
-            learn: document.getElementById('learn-link'),
-            about: document.getElementById('about-link'),
-            mobileHome: document.getElementById('mobile-home-link'),
-            mobileTest: document.getElementById('mobile-test-link'),
-            mobileLearn: document.getElementById('mobile-learn-link'),
-            mobileAbout: document.getElementById('mobile-about-link')
-        };
-
-        const testElements = {
-            questionWord: document.getElementById('question-word'),
-            optionsContainer: document.getElementById('options-container'),
-            progressBar: document.getElementById('progress-bar'),
-            progressText: document.getElementById('progress-text'),
-            currentQuestion: document.getElementById('current-question'),
-            totalQuestions: document.getElementById('total-questions'),
-            prevBtn: document.getElementById('prev-btn'),
-            nextBtn: document.getElementById('next-btn')
-        };
-
-        const resultsElements = {
-            scorePercentage: document.getElementById('score-percentage'),
-            scoreCircle: document.getElementById('score-circle'),
-            correctAnswers: document.getElementById('correct-answers'),
-            totalQuestionsResult: document.getElementById('total-questions-result'),
-            estimatedVocab: document.getElementById('estimated-vocab'),
-            vocabLevel: document.getElementById('vocab-level'),
-            incorrectQuestions: document.getElementById('incorrect-questions')
-        };
-
-        // 测试状态
-        let testState = {
-            questions: [],
-            currentQuestionIndex: 0,
-            answers: [],
-            selectedOptions: []
-        };
-
-        // 切换视图
-        function showSection(sectionId) {
-            Object.values(sections).forEach(section => {
-                section.classList.add('hidden');
+        // 解析词典数据
+        function parseDictionaryData(data) {
+            const entries = [];
+            const lines = data.trim().split('\n');
+            
+            lines.forEach(line => {
+                if (!line.trim()) return;
+                
+                // 去除行尾的逗号
+                line = line.replace(/,$/, '');
+                
+                // 提取单词和定义
+                const match = line.match(/"([^"]+)":\s*"(.*)"/);
+                if (match) {
+                    // 去除序号和点号
+                    const word = match[1].replace(/^\d+\.\s*/, '');
+                    const definition = match[2];
+                    entries.push({ word, definition });
+                }
             });
             
-            if (sections[sectionId]) {
-                sections[sectionId].classList.remove('hidden');
-            }
-            
-            // 关闭移动端菜单
-            document.getElementById('mobile-menu').classList.add('hidden');
-            
-            // 更新导航链接状态
-            Object.values(navLinks).forEach(link => {
-                link.classList.remove('text-primary');
-                link.classList.add('text-gray-600', 'dark:text-gray-300');
+            return entries;
+        }
+
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', () => {
+            const dictionaryEntries = parseDictionaryData(dictionaryData);
+            renderWordList(dictionaryEntries);
+            setupSearch(dictionaryEntries);
+        });
+
+        // 渲染单词列表
+        function renderWordList(entries) {
+            const wordListElement = document.getElementById('word-list');
+            wordListElement.innerHTML = '';
+
+            entries.forEach(entry => {
+                const wordItem = document.createElement('div');
+                wordItem.className = 'entry-card p-3 border-l-4 border-transparent hover:border-primary cursor-pointer rounded transition-colors';
+                wordItem.innerHTML = `
+                    <span class="font-serif text-lg font-medium">${entry.word}</span>
+                `;
+                wordItem.addEventListener('click', () => showWordDetail(entry));
+                wordListElement.appendChild(wordItem);
             });
-            
-            if (navLinks[sectionId]) {
-                navLinks[sectionId].classList.add('text-primary');
-                navLinks[sectionId].classList.remove('text-gray-600', 'dark:text-gray-300');
-            }
-            
-            if (navLinks[`mobile${sectionId.charAt(0).toUpperCase() + sectionId.slice(1)}`]) {
-                navLinks[`mobile${sectionId.charAt(0).toUpperCase() + sectionId.slice(1)}`].classList.add('text-primary');
-                navLinks[`mobile${sectionId.charAt(0).toUpperCase() + sectionId.slice(1)}`].classList.remove('text-gray-600', 'dark:text-gray-300');
-            }
-            
-            // 滚动到顶部
-            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // 初始化测试
-        function initializeTest() {
-            // 创建问题数组
-            const words = Object.keys(wordList);
-            testState.questions = [];
-            
-            // 随机选择20个单词作为测试题
-            for (let i = 0; i < 20; i++) {
-                const randomIndex = Math.floor(Math.random() * words.length);
-                const word = words[randomIndex];
-                const correctAnswer = wordList[word];
-                
-                // 生成3个错误选项
-                const wrongAnswers = [];
-                const wrongOptions = [...words];
-                wrongOptions.splice(randomIndex, 1); // 移除正确答案
-                
-                for (let j = 0; j < 3; j++) {
-                    const wrongIndex = Math.floor(Math.random() * wrongOptions.length);
-                    wrongAnswers.push(wordList[wrongOptions[wrongIndex]]);
-                    wrongOptions.splice(wrongIndex, 1); // 确保选项不重复
-                }
-                
-                // 组合所有选项并随机排序
-                const allOptions = [correctAnswer, ...wrongAnswers];
-                const shuffledOptions = allOptions.sort(() => Math.random() - 0.5);
-                
-                // 创建问题对象
-                const question = {
-                    word,
-                    correctAnswer,
-                    options: shuffledOptions,
-                    selected: null
-                };
-                
-                testState.questions.push(question);
-                words.splice(randomIndex, 1); // 确保不重复选择同一个单词
-            }
-            
-            // 重置测试状态
-            testState.currentQuestionIndex = 0;
-            testState.answers = Array(20).fill(null);
-            testState.selectedOptions = Array(20).fill(null);
-            
-            // 更新UI
-            updateTestUI();
-        }
-
-        // 更新测试UI
-        function updateTestUI() {
-            const currentQuestion = testState.questions[testState.currentQuestionIndex];
-            
-            // 更新单词
-            testElements.questionWord.textContent = currentQuestion.word;
-            
-            // 更新进度
-            const progress = ((testState.currentQuestionIndex + 1) / testState.questions.length) * 100;
-            testElements.progressBar.style.width = `${progress}%`;
-            testElements.progressText.textContent = `进度: ${Math.round(progress)}%`;
-            testElements.currentQuestion.textContent = testState.currentQuestionIndex + 1;
-            
-            // 更新选项
-            testElements.optionsContainer.innerHTML = '';
-            currentQuestion.options.forEach((option, index) => {
-                const optionElement = document.createElement('button');
-                optionElement.className = `btn-effect w-full text-left p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-dark-card hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors flex items-center`;
-                
-                if (testState.selectedOptions[testState.currentQuestionIndex] === index) {
-                    optionElement.classList.add('border-primary', 'bg-primary/5');
-                }
-                
-                optionElement.innerHTML = `
-                    <div class="w-6 h-6 rounded-full border border-gray-300 dark:border-gray-600 flex-shrink-0 mr-3 flex items-center justify-center">
-                        ${testState.selectedOptions[testState.currentQuestionIndex] === index ? '<i class="fa fa-check text-primary"></i>' : ''}
+        // 显示单词详情
+        function showWordDetail(entry) {
+            const detailElement = document.getElementById('word-detail');
+            detailElement.innerHTML = `
+                <div class="animate-fade-in">
+                    <h2 class="text-3xl font-serif font-bold text-dark mb-2">${entry.word}</h2>
+                    <div class="border-b border-gray-200 mb-4 pb-3"></div>
+                    <div class="prose max-w-none">
+                        <p class="text-lg text-gray-800 leading-relaxed">${formatDefinition(entry.definition)}</p>
                     </div>
-                    <span>${option}</span>
-                `;
-                
-                optionElement.addEventListener('click', () => {
-                    selectOption(index);
-                });
-                
-                testElements.optionsContainer.appendChild(optionElement);
-            });
-            
-            // 更新导航按钮状态
-            testElements.prevBtn.disabled = testState.currentQuestionIndex === 0;
-            testElements.nextBtn.disabled = testState.selectedOptions[testState.currentQuestionIndex] === null;
-            
-            if (testState.currentQuestionIndex === testState.questions.length - 1) {
-                testElements.nextBtn.innerHTML = '完成 <i class="fa fa-check ml-2"></i>';
-            } else {
-                testElements.nextBtn.innerHTML = '下一题 <i class="fa fa-arrow-right ml-2"></i>';
-            }
+                </div>
+            `;
         }
 
-        // 选择选项
-        function selectOption(optionIndex) {
-            testState.selectedOptions[testState.currentQuestionIndex] = optionIndex;
-            updateTestUI();
-        }
-
-        // 移动到上一题
-        function goToPreviousQuestion() {
-            if (testState.currentQuestionIndex > 0) {
-                testState.currentQuestionIndex--;
-                updateTestUI();
-            }
-        }
-
-        // 移动到下一题或完成测试
-        function goToNextQuestion() {
-            if (testState.currentQuestionIndex < testState.questions.length - 1) {
-                testState.currentQuestionIndex++;
-                updateTestUI();
-            } else {
-                // 完成测试，计算结果
-                calculateResults();
-                showSection('results');
-            }
-        }
-
-        // 计算测试结果
-        function calculateResults() {
-            let correctCount = 0;
-            const incorrectQuestions = [];
-            
-            testState.questions.forEach((question, index) => {
-                const selectedOption = testState.selectedOptions[index];
-                if (selectedOption !== null && question.options[selectedOption] === question.correctAnswer) {
-                    correctCount++;
-                } else if (selectedOption !== null) {
-                    incorrectQuestions.push({
-                        word: question.word,
-                        correct: question.correctAnswer,
-                        selected: question.options[selectedOption]
-                    });
+        // 设置搜索功能
+        function setupSearch(entries) {
+            const searchInput = document.getElementById('search-input');
+            searchInput.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase().trim();
+                if (!searchTerm) {
+                    renderWordList(entries);
+                    return;
                 }
-            });
-            
-            const scorePercentage = Math.round((correctCount / testState.questions.length) * 100);
-            
-            // 更新结果UI
-            resultsElements.scorePercentage.textContent = `${scorePercentage}%`;
-            resultsElements.correctAnswers.textContent = correctCount;
-            resultsElements.totalQuestionsResult.textContent = testState.questions.length;
-            
-            // 更新圆形进度条
-            const circumference = 2 * Math.PI * 45;
-            const offset = circumference - (scorePercentage / 100 * circumference);
-            resultsElements.scoreCircle.style.strokeDasharray = `${circumference} ${circumference}`;
-            resultsElements.scoreCircle.style.strokeDashoffset = offset;
-            
-            // 估计词汇量
-            let estimatedVocab = 0;
-            let vocabLevel = '';
-            
-            if (scorePercentage < 30) {
-                estimatedVocab = '1,000-2,000';
-                vocabLevel = '初级';
-            } else if (scorePercentage < 50) {
-                estimatedVocab = '2,000-3,500';
-                vocabLevel = '基础';
-            } else if (scorePercentage < 70) {
-                estimatedVocab = '3,500-5,000';
-                vocabLevel = '中级';
-            } else if (scorePercentage < 90) {
-                estimatedVocab = '5,000-8,000';
-                vocabLevel = '中高级';
-            } else {
-                estimatedVocab = '8,000+';
-                vocabLevel = '高级';
-            }
-            
-            resultsElements.estimatedVocab.textContent = estimatedVocab;
-            resultsElements.vocabLevel.textContent = vocabLevel;
-            
-            // 根据分数级别设置颜色
-            if (scorePercentage < 50) {
-                resultsElements.vocabLevel.classList.remove('text-secondary', 'text-success');
-                resultsElements.vocabLevel.classList.add('text-danger');
-            } else if (scorePercentage < 80) {
-                resultsElements.vocabLevel.classList.remove('text-danger', 'text-success');
-                resultsElements.vocabLevel.classList.add('text-secondary');
-            } else {
-                resultsElements.vocabLevel.classList.remove('text-danger', 'text-secondary');
-                resultsElements.vocabLevel.classList.add('text-success');
-            }
-            
-            // 显示错题
-            resultsElements.incorrectQuestions.innerHTML = '';
-            
-            if (incorrectQuestions.length > 0) {
-                incorrectQuestions.forEach((item, index) => {
-                    const questionElement = document.createElement('div');
-                    questionElement.className = 'bg-gray-50 dark:bg-gray-800/50 p-4 rounded-xl';
-                    questionElement.innerHTML = `
-                        <div class="flex justify-between items-start mb-2">
-                            <span class="font-medium">${item.word}</span>
-                            <span class="text-xs text-gray-500 dark:text-gray-400">第 ${index + 1} 题</span>
-                        </div>
-                        <div class="mb-2">
-                            <span class="text-sm text-gray-600 dark:text-gray-400">你的答案:</span>
-                            <span class="text-sm text-danger ml-2">${item.selected}</span>
-                        </div>
-                        <div>
-                            <span class="text-sm text-gray-600 dark:text-gray-400">正确答案:</span>
-                            <span class="text-sm text-success ml-2">${item.correct}</span>
-                        </div>
-                    `;
-                    
-                    resultsElements.incorrectQuestions.appendChild(questionElement);
-                });
-            } else {
-                resultsElements.incorrectQuestions.innerHTML = `
-                    <div class="text-center py-6 text-gray-500 dark:text-gray-400">
-                        <i class="fa fa-trophy text-3xl mb-2 text-secondary"></i>
-                        <p>太棒了！你全部答对了！</p>
-                    </div>
-                `;
-            }
-        }
 
-        // 生成学习模式的单词卡片
-        function generateLearnModeCards() {
-            const container = document.querySelector('#learn .grid');
-            container.innerHTML = '';
-            
-            const words = Object.keys(wordList).sort();
-            
-            words.forEach(word => {
-                const card = document.createElement('div');
-                card.className = 'bg-white dark:bg-dark-card rounded-xl p-6 shadow-md card-shadow card-hover fade-in';
-                card.style.animationDelay = `${Math.random() * 0.3}s`;
-                
-                card.innerHTML = `
-                    <h3 class="text-lg font-semibold mb-2 text-primary">${word}</h3>
-                    <p class="text-gray-600 dark:text-gray-400">${wordList[word]}</p>
-                `;
-                
-                container.appendChild(card);
+                const filteredEntries = entries.filter(entry => 
+                    entry.word.toLowerCase().includes(searchTerm) || 
+                    entry.definition.toLowerCase().includes(searchTerm)
+                );
+                renderWordList(filteredEntries);
             });
         }
 
-        // 搜索单词
-        function searchWords() {
-            const searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
-            const cards = document.querySelectorAll('#learn .grid .fade-in');
-            
-            cards.forEach(card => {
-                const word = card.querySelector('h3').textContent.toLowerCase();
-                const definition = card.querySelector('p').textContent.toLowerCase();
-                
-                if (word.includes(searchTerm) || definition.includes(searchTerm)) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
+        // 格式化定义文本，突出词性标记
+        function formatDefinition(definition) {
+            return definition.replace(/\(([^)]+)\)/g, '<span class="bg-primary/10 text-primary px-1.5 py-0.5 rounded text-sm">$1</span>');
         }
-
-        // 切换深色/浅色模式
-        function toggleTheme() {
-            document.documentElement.classList.toggle('dark');
-            
-            // 保存主题偏好
-            if (document.documentElement.classList.contains('dark')) {
-                localStorage.setItem('theme', 'dark');
-            } else {
-                localStorage.setItem('theme', 'light');
-            }
-        }
-
-        // 检查用户的主题偏好
-        function checkThemePreference() {
-            if (localStorage.getItem('theme') === 'dark' || 
-                (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                document.documentElement.classList.add('dark');
-            } else {
-                document.documentElement.classList.remove('dark');
-            }
-        }
-
-        // 初始化事件监听
-        function initializeEventListeners() {
-            // 导航链接
-            navLinks.home.addEventListener('click', () => showSection('home'));
-            navLinks.test.addEventListener('click', () => {
-                initializeTest();
-                showSection('test');
-            });
-            navLinks.learn.addEventListener('click', () => {
-                generateLearnModeCards();
-                showSection('learn');
-            });
-            navLinks.about.addEventListener('click', () => showSection('about'));
-            
-            // 移动端导航链接
-            navLinks.mobileHome.addEventListener('click', () => showSection('home'));
-            navLinks.mobileTest.addEventListener('click', () => {
-                initializeTest();
-                showSection('test');
-            });
-            navLinks.mobileLearn.addEventListener('click', () => {
-                generateLearnModeCards();
-                showSection('learn');
-            });
-            navLinks.mobileAbout.addEventListener('click', () => showSection('about'));
-            
-            // 移动端菜单按钮
-            document.getElementById('mobile-menu-btn').addEventListener('click', () => {
-                document.getElementById('mobile-menu').classList.toggle('hidden');
-            });
-            
-            // 主题切换
-            document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
-            
-            // 首页按钮
-            document.getElementById('start-test-btn').addEventListener('click', () => {
-                initializeTest();
-                showSection('test');
-            });
-            
-            document.getElementById('learn-mode-btn').addEventListener('click', () => {
-                generateLearnModeCards();
-                showSection('learn');
-            });
-            
-            // 测试页面按钮
-            document.getElementById('back-to-home').addEventListener('click', () => showSection('home'));
-            testElements.prevBtn.addEventListener('click', goToPreviousQuestion);
-            testElements.nextBtn.addEventListener('click', goToNextQuestion);
-            
-            // 学习模式按钮
-            document.getElementById('back-to-home-learn').addEventListener('click', () => showSection('home'));
-            document.getElementById('search-input').addEventListener('input', searchWords);
-            
-            // 结果页面按钮
-            document.getElementById('restart-test-btn').addEventListener('click', () => {
-                initializeTest();
-                showSection('test');
-            });
-            
-            document.getElementById('view-learn-mode-btn').addEventListener('click', () => {
-                generateLearnModeCards();
-                showSection('learn');
-            });
-        }
-
-        // 初始化应用
-        function initializeApp() {
-            checkThemePreference();
-            initializeEventListeners();
-            showSection('home');
-        }
-
-        // 页面加载完成后初始化应用
-        document.addEventListener('DOMContentLoaded', initializeApp);
     </script>
 </body>
 </html>
