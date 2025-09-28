@@ -1,200 +1,101 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>中文 → 约特兰语翻译器</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    <title>Mahons aluarepret | Mahons dictionary,translations</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1a365d',
+                        secondary: '#4a5568',
+                        accent: '#718096',
+                        light: '#e2e8f0',
+                        dark: '#2d3748'
+                    },
+                    fontFamily: {
+                        serif: ['Cambria', 'Georgia', 'serif'],
+                    },
+                }
+            }
         }
-        
-        body {
-            background-color: #f0f4f8;
-            color: #334e68;
-            line-height: 1.6;
-        }
-        
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        header {
-            text-align: center;
-            margin: 30px 0;
-        }
-        
-        header h1 {
-            color: #2c3e50;
-            font-size: 2rem;
-            margin-bottom: 10px;
-        }
-        
-        .translator-box {
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            overflow: hidden;
-        }
-        
-        .translation-area {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .input-section, .output-section {
-            padding: 20px;
-            position: relative;
-        }
-        
-        .input-section {
-            border-bottom: 1px solid #e2e8f0;
-        }
-        
-        .section-title {
-            margin-bottom: 12px;
-            font-size: 1.1rem;
-            color: #475569;
-        }
-        
-        textarea {
-            width: 100%;
-            height: 180px;
-            padding: 15px;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            resize: none;
-            font-size: 1rem;
-        }
-        
-        textarea:focus {
-            outline: none;
-            border-color: #3b82f6;
-        }
-        
-        .controls {
-            display: flex;
-            justify-content: flex-end;
-            margin-top: 15px;
-            gap: 10px;
-        }
-        
-        .clear-btn, .translate-btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-        
-        .clear-btn {
-            background-color: #f1f5f9;
-            color: #64748b;
-        }
-        
-        .translate-btn {
-            background-color: #3b82f6;
-            color: white;
-        }
-        
-        .output-section {
-            background-color: #f8fafc;
-        }
-        
-        #outputText {
-            background-color: white;
-            min-height: 180px;
-            border-radius: 8px;
-            padding: 15px;
-            border: 1px solid #cbd5e1;
-            white-space: pre-wrap;
-        }
-        
-        .dictionary-section {
-            margin-top: 40px;
-            background-color: white;
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        }
-        
-        .dictionary-section h2 {
-            color: #2c3e50;
-            margin-bottom: 20px;
-            font-size: 1.4rem;
-        }
-        
-        .vocab-list {
-            max-height: 300px;
-            overflow-y: auto;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 15px;
-        }
-        
-        .vocab-entry {
-            padding: 10px 0;
-            border-bottom: 1px dashed #e2e8f0;
-        }
-        
-        .vocab-entry:last-child {
-            border-bottom: none;
-        }
-        
-        footer {
-            text-align: center;
-            margin: 40px 0 20px;
-            color: #94a3b8;
-            font-size: 0.9rem;
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .dictionary-shadow {
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            }
+            .entry-card {
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+            }
+            .entry-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            }
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <header>
-            <h1>中文 → 约特兰语翻译器</h1>
-            <p>自动去除词典序号，仅句首单词大写</p>
-        </header>
-        
-        <div class="translator-box">
-            <div class="translation-area">
-                <div class="input-section">
-                    <div class="section-title">中文输入</div>
-                    <textarea id="inputText" placeholder="请输入中文文本，例如：飓风很危险 我害怕龙卷风"></textarea>
-                    <div class="controls">
-                        <button class="clear-btn" id="clearBtn">清空</button>
-                        <button class="translate-btn" id="translateBtn">翻译</button>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    <!-- 顶部导航 -->
+    <header class="bg-primary text-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center">
+            <div class="flex items-center mb-4 md:mb-0">
+                <i class="fa fa-book text-3xl mr-3"></i>
+                <h1 class="text-2xl font-bold tracking-wide">HANE | 在线词典</h1>
+            </div>
+            <div class="w-full md:w-auto">
+                <div class="relative">
+                    <input type="text" id="search-input" placeholder="搜索单词..." 
+                        class="w-full md:w-80 pl-10 pr-4 py-2 rounded-lg text-dark focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all">
+                    <i class="fa fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="flex-grow container mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- 左侧单词列表 -->
+            <div class="md:col-span-1 bg-white rounded-xl p-4 dictionary-shadow">
+                <h2 class="text-xl font-bold text-primary mb-4 pb-2 border-b border-gray-200">单词列表</h2>
+                <div id="word-list" class="space-y-1 max-h-[70vh] overflow-y-auto pr-2">
+                    <!-- 单词列表将通过JavaScript动态生成 -->
+                </div>
+            </div>
+
+            <!-- 右侧单词详情 -->
+            <div class="md:col-span-2 bg-white rounded-xl p-6 dictionary-shadow">
+                <div id="word-detail" class="min-h-[60vh]">
+                    <div class="text-center py-12 text-gray-500">
+                        <i class="fa fa-search text-5xl mb-4"></i>
+                        <p class="text-lg">请从左侧选择一个单词或使用搜索功能</p>
                     </div>
-                </div>
-                
-                <div class="output-section">
-                    <div class="section-title">约特兰语结果</div>
-                    <div id="outputText">翻译结果将显示在这里...</div>
+                    <!-- 单词详情将通过JavaScript动态生成 -->
                 </div>
             </div>
         </div>
-        
-        <div class="dictionary-section">
-            <h2>约特兰语词库</h2>
-            <div class="vocab-list" id="vocabList">
-                <!-- 词库内容将通过JavaScript动态生成 -->
-            </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-primary text-white py-6 mt-8">
+        <div class="container mx-auto px-4 text-center">
+            <p class="mb-2">哈恩大学（中国） &copy; 2025</p>
+            <p class="text-sm text-gray-300">https://hane.aceptaul.org</p>
         </div>
-        
-        <footer>
-            中文-约特兰语翻译器 &copy; 2023
-        </footer>
-    </div>
+    </footer>
 
     <script>
-        // 约特兰语词库 - 包含带有序号的条目
-        const yotlanDictionary = {
+        // 词典数据 - 保持原始格式
+        const dictionaryData = `
+        
 "1.	A": "(n.) 它; 他; （某个）事物; 东西; (s.)（前缀）加强的; 更高一层的",
 "2.	Aa": "(i.) 啊！; 哎！（表惊讶）",
 "3.	Aalpino": "(c.) 圆桌",
@@ -7550,187 +7451,92 @@
 "7353.	Zylps": "(c.) （专业）矿",
 "7354.	Zylpsaft": "(c.) 采矿; 采矿行业",
 "7355.	Zylpslean": "(c.) 石绿色 (s.) 石绿色的"
-        };
-        
-        // 解析词库并创建中文到约特兰语的映射
-        const chineseToYotlanMap = {};
-        const parsedDictionary = {};
-        
-        // 解析词库格式 - 自动去除序号
-        function parseDictionary() {
-            for (const [rawYotlanWord, entry] of Object.entries(yotlanDictionary)) {
-                // 移除可能的序号（数字、点号和制表符）
-                let yotlanWord = rawYotlanWord.replace(/^\d+\.\s*/, '');
-                
-                // 提取词性和释义
-                const parts = entry.match(/^\((.*?)\) (.*)$/);
-                if (parts && parts.length === 3) {
-                    const partOfSpeech = parts[1];
-                    const definitions = parts[2].split('; ');
-                    
-                    parsedDictionary[yotlanWord] = {
-                        partOfSpeech: partOfSpeech,
-                        definitions: definitions
-                    };
-                    
-                    // 建立中文到约特兰语的映射
-                    definitions.forEach(def => {
-                        if (!chineseToYotlanMap[def]) {
-                            chineseToYotlanMap[def] = [];
-                        }
-                        chineseToYotlanMap[def].push(yotlanWord);
-                    });
-                }
-            }
-        }
-        
-        // 初始化词典显示 - 显示去除序号后的条目
-        function initDictionaryDisplay() {
-            const vocabList = document.getElementById("vocabList");
-            let html = "";
+`;
+
+        // 解析词典数据
+        function parseDictionaryData(data) {
+            const entries = [];
+            const lines = data.trim().split('\n');
             
-            // 按字母顺序排序
-            const sortedEntries = Object.entries(yotlanDictionary).sort((a, b) => {
-                // 先去除序号再排序
-                const wordA = a[0].replace(/^\d+\.\s*/, '');
-                const wordB = b[0].replace(/^\d+\.\s*/, '');
-                return wordA.localeCompare(wordB);
+            lines.forEach(line => {
+                if (!line.trim()) return;
+                
+                // 去除行尾的逗号
+                line = line.replace(/,$/, '');
+                
+                // 提取单词和定义
+                const match = line.match(/"([^"]+)":\s*"(.*)"/);
+                if (match) {
+                    // 去除序号和点号
+                    const word = match[1].replace(/^\d+\.\s*/, '');
+                    const definition = match[2];
+                    entries.push({ word, definition });
+                }
             });
             
-            for (const [rawWord, definition] of sortedEntries) {
-                // 显示时去除序号
-                const word = rawWord.replace(/^\d+\.\s*/, '');
-                html += `<div class="vocab-entry">${word}: ${definition}</div>`;
-            }
-            
-            vocabList.innerHTML = html;
+            return entries;
         }
-        
-        // 中文分词函数 - 最长匹配算法
-        function tokenizeChinese(text) {
-            // 移除所有标点符号
-            text = text.replace(/[,.!?；：，。！？]/g, "");
-            
-            const words = [];
-            let currentPos = 0;
-            
-            // 从最长可能的词汇开始匹配
-            while (currentPos < text.length) {
-                let matched = false;
-                
-                // 尝试匹配最长的可能词汇（最多6个字符）
-                for (let len = 6; len >= 1; len--) {
-                    if (currentPos + len > text.length) continue;
-                    
-                    const word = text.substring(currentPos, currentPos + len);
-                    if (chineseToYotlanMap.hasOwnProperty(word)) {
-                        words.push(word);
-                        currentPos += len;
-                        matched = true;
-                        break;
-                    }
-                }
-                
-                // 如果没有匹配到，按单个字符处理
-                if (!matched) {
-                    words.push(text.charAt(currentPos));
-                    currentPos++;
-                }
-            }
-            
-            return words;
-        }
-        
-        // 翻译函数 - 中文到约特兰语
-        function translateChineseToYotlan(text) {
-            if (!text.trim()) return "请输入中文文本";
-            
-            // 自动分词
-            const words = tokenizeChinese(text);
-            const result = [];
-            let tensePrefix = "";
-            
-            // 提取时态标记
-            for (let i = 0; i < words.length; i++) {
-                if (words[i] === "了") {
-                    tensePrefix = "ti ";
-                    words.splice(i, 1);
-                    i--;
-                } else if (words[i] === "将") {
-                    tensePrefix = "vi ";
-                    words.splice(i, 1);
-                    i--;
-                } else if (words[i] === "正在") {
-                    tensePrefix = "le ";
-                    words.splice(i, 1);
-                    i--;
-                }
-            }
-            
-            // 处理每个词
-            for (let word of words) {
-                // 查找对应的约特兰语词汇
-                let translatedWords = chineseToYotlanMap[word] || [`[${word}]`];
-                // 取第一个匹配项
-                let translatedWord = translatedWords[0];
-                
-                // 判断是否为动词并应用时态
-                const verbs = ["吃", "做", "学习", "是", "保持", "驻扎", "停留", "留下", "维持"];
-                if (verbs.includes(word) && tensePrefix) {
-                    translatedWord = tensePrefix + translatedWord;
-                    tensePrefix = "";
-                }
-                
-                result.push(translatedWord);
-            }
-            
-            // 组合结果并确保只有句首大写
-            if (result.length === 0) return "";
-            
-            // 所有单词转为小写
-            const lowerCaseWords = result.map(word => word.toLowerCase());
-            // 仅句首单词首字母大写
-            lowerCaseWords[0] = lowerCaseWords[0].charAt(0).toUpperCase() + lowerCaseWords[0].slice(1);
-            
-            return lowerCaseWords.join(" ") + ".";
-        }
-        
-        // 执行翻译
-        function performTranslation() {
-            const text = document.getElementById("inputText").value;
-            let translated;
-            
-            try {
-                translated = translateChineseToYotlan(text);
-                document.getElementById("outputText").textContent = translated;
-            } catch (error) {
-                document.getElementById("outputText").textContent = "翻译时出错: " + error.message;
-            }
-        }
-        
-        // 清空输入输出
-        function clearText() {
-            document.getElementById("inputText").value = "";
-            document.getElementById("outputText").textContent = "翻译结果将显示在这里...";
-        }
-        
-        // 事件监听
-        document.getElementById("translateBtn").addEventListener("click", performTranslation);
-        document.getElementById("clearBtn").addEventListener("click", clearText);
-        
-        // 回车键翻译
-        document.getElementById("inputText").addEventListener("keydown", (e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                performTranslation();
-            }
+
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', () => {
+            const dictionaryEntries = parseDictionaryData(dictionaryData);
+            renderWordList(dictionaryEntries);
+            setupSearch(dictionaryEntries);
         });
-        
-        // 页面加载时初始化
-        window.addEventListener("load", () => {
-            parseDictionary();
-            initDictionaryDisplay();
-        });
+
+        // 渲染单词列表
+        function renderWordList(entries) {
+            const wordListElement = document.getElementById('word-list');
+            wordListElement.innerHTML = '';
+
+            entries.forEach(entry => {
+                const wordItem = document.createElement('div');
+                wordItem.className = 'entry-card p-3 border-l-4 border-transparent hover:border-primary cursor-pointer rounded transition-colors';
+                wordItem.innerHTML = `
+                    <span class="font-serif text-lg font-medium">${entry.word}</span>
+                `;
+                wordItem.addEventListener('click', () => showWordDetail(entry));
+                wordListElement.appendChild(wordItem);
+            });
+        }
+
+        // 显示单词详情
+        function showWordDetail(entry) {
+            const detailElement = document.getElementById('word-detail');
+            detailElement.innerHTML = `
+                <div class="animate-fade-in">
+                    <h2 class="text-3xl font-serif font-bold text-dark mb-2">${entry.word}</h2>
+                    <div class="border-b border-gray-200 mb-4 pb-3"></div>
+                    <div class="prose max-w-none">
+                        <p class="text-lg text-gray-800 leading-relaxed">${formatDefinition(entry.definition)}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 设置搜索功能
+        function setupSearch(entries) {
+            const searchInput = document.getElementById('search-input');
+            searchInput.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase().trim();
+                if (!searchTerm) {
+                    renderWordList(entries);
+                    return;
+                }
+
+                const filteredEntries = entries.filter(entry => 
+                    entry.word.toLowerCase().includes(searchTerm) || 
+                    entry.definition.toLowerCase().includes(searchTerm)
+                );
+                renderWordList(filteredEntries);
+            });
+        }
+
+        // 格式化定义文本，突出词性标记
+        function formatDefinition(definition) {
+            return definition.replace(/\(([^)]+)\)/g, '<span class="bg-primary/10 text-primary px-1.5 py-0.5 rounded text-sm">$1</span>');
+        }
     </script>
 </body>
 </html>
+    
